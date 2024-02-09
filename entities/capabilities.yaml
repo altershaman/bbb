@@ -1,0 +1,395 @@
+entities:
+
+  seaf.bbb.capabilities:
+    title: Функциональная бизнес-способность (ФБС)
+
+    objects:
+      capability:
+        route: "/"
+        title: ФБС
+        symbol: "fbs"
+
+    schema:
+      patternProperties:
+        "^[a-zA-Z0-9_]{1,20}$": 
+          type: object  
+          properties: 
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            relates:
+              title: Вышестоящая ФБС
+              type: string
+              $ref: "#/$rels/seaf.bbb.capabilities.capability"
+            owner:
+              title: Владелец
+              type: string
+              $ref: "#/$rels/seaf.ba.parties.party"
+            use_b_apies:
+              title: Используемые бизнес-апи
+              type: array
+              items:
+                type: array
+                items:
+                  $ref: "#/$rels/seaf.bbb.b_api.bapi"
+
+          required:
+            - title
+          additionalProperties: false
+
+
+  # Идентификатор сущности
+  automated_capability:
+    # Смысловое описание сущности
+    title: Business Building Block
+    description: >
+      \n
+      Business Building Block (BBB) - это один из вариантов Автоматизированных Функциональных Бизнес Способностей (аФБС),
+      которые представляют собой цельные независимые блок и в части бизнес-функциональности, и в части прикладной реализации.
+      С остальными BBB он взаимодейтсвует через синхронные и асинхронные API, которые имеют задокументированный контракт.
+    # Создаем пользовательское меню
+    menu: >
+      (
+        [
+          {
+            "link": "entities/automated_capability/automated_capability_list",
+            "location": "Архитектура/Business Building Blocks"
+          }
+        ]
+      )
+    # Схема данных объектов сущности
+    schema:
+      $defs:
+        status:
+          title: Статус ЖЦ
+          description: >
+            \n
+            Статус жизненного цикла Интерфейса. Он имеет одно из следующих значений:\n
+            \n
+            1 Проектирование - BBB находится в статусе проектирования. Разработка на прикладном уровне еще не началась.\n
+            \n
+            2. Разработка - идет разработка на прикладном уровне (АС, код, API, топики и прочее). Есть Story в бэклоге ответсвенных команд, которые находятся в работе.\n
+            \n
+            3. Эксплуатация - в промышленную эксплуатацию выведена любая часть функциональности BBB и он генерирует Health-check события в систему мониторинга CL.\n
+            \n
+            4. Выведен - BBB выведен из эксплуатации либо от него отказались на этапе проектирования или разработки.
+          enum:
+            - Проектирование
+            - Разработка
+            - Эксплуатация
+            - Выведен
+          default: Проектирование
+          links:
+            $ref: "#/$defs/status"
+      patternProperties:
+        "^[a-zA-Z0-9_]{1,20}$": # Шаблон
+          type: object  # аФБС будет объект
+          properties:   # со следующей структурой
+            # Связь аФБС с другими объектами (аФБС, АС, Роли и т.д.)
+            title:
+              title: Наименование
+              type: string
+              description: >
+                \n
+                Введите короткий заголовок BBB (желательно, уникальный). Например, '[CL] [Онлайн] [BBB] Контекст сделки' или '[Риски] [BBB] Формирование ГСЗ'
+            description:
+              title: Описание
+              type: string
+              description: >
+                \n
+                Подробное описание BBB.
+            capability:
+              title: ФБС
+              $ref: "#/$rels/capabilities.capability"
+              description: >
+                \n
+                Укажите родительскую Функциональную бизнес способность (ФБС) для данного BBB.\n
+                \n
+                На данный момент это поле опциональное и методологие его заполнения в проработке.
+            owner_block:
+              title: Блок-владелец
+              type: string
+              description: >
+                \n
+                Блок-владелец данного BBB.
+            owner_tribe:
+              title: Трайб-владелец
+              type: string
+              description: >
+                \n
+                Трайб-владелец данного BBB.
+            status:
+              $ref: "#/$defs/status"
+            architectureSchemas:
+              description: >
+                \n
+                Ссылки на архитектурные диаграммы BBB: скетчи, бизнес архитектура, концептуальная архиектура и прочее.
+                Заполняем, например, так:
+                 - title: Скетч
+                   url: https://confluence.sberbank.ru/pages/viewpage.action?pageId=XXXXXXXXXX
+              type: array
+              items:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  url:
+                    type: string
+                required:
+                  - title
+                  - url
+            interfaces:
+              title: Интерфейсы (API)
+              description: >
+                \n
+                Интерфейсы, которые BBB предоставляет внешним потребителям.
+              type: array
+              items:
+                type: object
+                properties:
+                  interface_type:
+                   title: Тип интерфейса
+                   enum:
+                      - event
+                      - API
+                   description: >
+                     \n
+                     Типы интерфейсов:
+                     \n
+                     * API - синхронный интерфейс для управления (PUT) данными, которыми владелеет данный BBB, или для получения (GET) их в различных разрезах.
+                     \n
+                     * События (event) - уведомление о событии, произошедешем внутри процессов BBB, о котором он обязан уведомлять окружающих. Реализовано через событие в топике Kafka.
+                  eventType:
+                    title: Тип события
+                    enum:
+                      - business
+                      - activity
+                    description: >
+                      \n
+                      События могут быть двух видов:
+                      \n
+                      * Бизнес-события (business) - cобытия о появлении определенного бизнес значимого факта. К примеру, вход клиента в личный кабинет, или появление в ЕПК новой карточки клиента.
+                      \n
+                      * Activity-событие (activity) - события для обмена состояниями исполнения бизнес-сценариев в рамках активности по какому-либо процессу.
+                      Начало, завершение, или изменение состояния бизнес-сценария в BBB в рамках внутреннего процесса, или внешнего процесса по отношению к BBB, но в котором BBB выступает участником.
+                  id:
+                    type: string
+                    pattern: ^[a-zA-Z_0-9]*$
+                    description: >
+                      \n
+                      Произвольный идентификатор связи, уникальный в рамках текущего BBB.
+                      Необходим для ссылки на Интерфейс и может состоять из:
+                      * английских букв: a-z или A-Z
+                      * цифр: 0-9
+                      * нижнего подчеркивания: _
+                  title:
+                    title: Название
+                    type: string
+                    description: >
+                      \n
+                      Название интерфейса должно быть уникальным в рамках текущего BBB и четко отражать бизнес-смысл данного API или события.
+                  description:
+                    title: Описание
+                    type: string
+                    description: >
+                      \n
+                      Более подробное описание API или события, которое может включать в себя разные потробности и другую вспомогательную информацию.
+                  schemaURL:
+                    title: Ссылка написание схемы API/События
+                    description: >
+                      \n
+                      Описание схемы API или события должно быть опубликовано в общедоступном реестре.
+                      Если данному бизнес интерфейсу соответсвует только одна схема, то указываем одним URL. Если схем несколько, то указываем их массивом: URL и заголовок. 
+                      Для API обязательна Swagger спецификация, для События - AsyncAPI.
+                      Схемы могут быть размещены на следующих ресурсах:
+                      * META.Hub - https://sudir.sigma.sbrf.ru/meta/hub/
+                      * API Studio - https://apistudio.sigma.sbrf.ru/ (обязательно публичный проект)
+                      * Confluence - https://confluence.sberbank.ru/ (обязательно публичный доступ к странице)
+                    type: string
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items:
+                          type: object
+                          properties:
+                            title:
+                              type: string
+                            url:
+                              type: string
+                          required:
+                            - title
+                            - url
+                  status:
+                    $ref: "#/$defs/status"
+                required:
+                  - id
+                  - title
+                  - interface_type
+                  - status
+                oneOf:
+                  - properties:
+                      interface_type:
+                        enum:
+                         - event
+                      eventType:
+                        enum:
+                          - business
+                          - activity
+                    required:
+                      - eventType
+                  - properties:
+                      interface_type:
+                        enum:
+                          - API
+                    not:
+                      required:
+                        - eventType
+            integrations:
+              title: Связи
+              description: >
+                \n
+                Интерфейсы других BBB, которые данный BBB потребляет.
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    title: ID
+                    type: string
+                    pattern: ^[a-zA-Z0-9_]*$
+                    description: >
+                      \n
+                      Произвольный идентификатор связи, уникальный в рамках текущего BBB.
+                      Необходим для ссылки на эту интеграцию и может состоять из:
+                      * английских букв: a-z или A-Z
+                      * цифр: 0-9
+                      * нижнего подчеркивания: _
+                  source:
+                    title: Источник # BBB поставщик данных
+                    $ref: "#/$rels/automated_capability.automated_capability"
+                    description: >
+                      \n
+                      Сторонний BBB, который является поставщиком API или событий для данной интеграции.
+                  source_interface:
+                    title: API источника
+                    type: string
+                    description: >
+                      \n
+                      API или событие Источника, которое потребляется в рамках данной интеграции.
+                  title:
+                    title: Название
+                    type: string
+                    description: >
+                      \n
+                      Краткое описание данной интеграции.
+                  description:
+                    title: Описание
+                    type: string
+                    description: >
+                      \n
+                      Подробное описание данной интеграции.
+                  status:
+                    $ref: "#/$defs/status"
+                required:
+                  - id
+                  - source
+                  - status
+                additionalProperties: false
+
+          required:
+            - title
+            - description
+            - owner_block
+            - owner_tribe
+            - status
+            - interfaces
+            - integrations
+          # Исключаем иные идентификаторы
+          additionalProperties: false
+    # Создаем представления
+    presentations:
+
+      automated_capability_table_list:
+        type: table
+        headers:
+          - value: title
+            text: BBB
+            sortable: true
+            align: left
+            link: link_to_automated_capability
+
+          - value: id
+            text: ID в DocHub
+            sortable: true
+            align: left
+            width: 10%
+
+          - value: description
+            text: Описание
+            sortable: false
+            align: left
+
+          - value: owner_block
+            text: Блок
+            sortable: false
+            align: left
+
+          - value: owner_tribe
+            text: Трайб
+            sortable: false
+            align: left
+
+        source: datasets.automated_capabilities_list
+
+      # Выводим список бизнес-сущностей полученных в запросе выше business_entities_list
+      automated_capability_list:
+        type: markdown
+        template: templates/automated_capabilities_table.md
+      automated_capability_card: # Карточка объекта
+        # Тип документа представления
+        type: markdown
+        # Шаблон документа
+        template: templates/automated_capability_card.md
+        # На языке JSONata генерируем данные для шаблона
+        source: >
+          (
+            $entities := [$.automated_capability.$spread().$merge([$.*, {"id": $keys($)}])];
+            $entities [id=$params.id];
+          )
+      bbb_map: # Карточка объекта
+        # Тип документа представления
+        type: markdown
+        # Шаблон документа
+        template: templates/automated_capabilities_map.md
+        # На языке JSONata генерируем данные для шаблона
+        source: >
+      bbb_map_diagram:
+        title: Карта BBB со связями
+        type: plantuml
+        template: templates/automated_capabilities_map.puml
+        source: >
+          (
+          	{"bbbs": [$distinct([automated_capability.$spread().(
+          		$AUTOMATED_CAPABILITY_ID := $keys()[0];
+
+          		$bbbs := $.*.{
+          		"id": $AUTOMATED_CAPABILITY_ID,
+          		"title": title,
+          		"description": description,
+          		"owner_block": owner_block,
+          		"owner_tribe": owner_tribe,
+          		"link_to_automated_capability": "/entities/automated_capability/automated_capability_card?id=" & $AUTOMATED_CAPABILITY_ID
+
+          		};
+          	)])^(id)]}
+          )
+
+    objects: # Декларирование объектов сущности
+      automated_capability: # Объектом сущности является аФБС - "automated_capability"
+        route: "/"              # Путь к массиву объектов в Data Lake относительно пути /interactions
+        # Если route не указан, то по умолчанию он равен "/"
+        title: BBB   # Название объекта
+        symbol: >

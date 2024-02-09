@@ -1,0 +1,25 @@
+entities:
+
+  seaf.bbb.b_api:
+    title: Бизнес-апи
+    objects:
+      b_api:
+        route: "/"
+        title: Бизнес-апи
+        symbol: "bapi"
+    schema:
+      patternProperties:
+        "^[a-zA-Z0-9_]{1,20}$": 
+          type: object  
+          properties: 
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            relates:
+              title: Предоставляющая ФБС
+              type: string
+              $ref: "#/$rels/seaf.bbb.capabilities.capability"
+
