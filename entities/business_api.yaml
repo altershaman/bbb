@@ -18,8 +18,4 @@ entities:
             description:
               title: Описание
               type: string
-            relates:
-              title: Предоставляющая ФБС
-              type: string
-              $ref: "#/$rels/seaf.bbb.capabilities.capability"
 

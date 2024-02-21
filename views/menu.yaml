@@ -1,0 +1,6 @@
+hexNav:
+  - title: Архитектура/Бизнес-архитектура
+    includes:
+      - title: Способности и процессы
+        link: "/entities/hexV/view?id=cap_process_map"
+

@@ -40,6 +40,14 @@ entities:
                 type: array
                 items:
                   $ref: "#/$rels/seaf.bbb.b_api.bapi"
+            provide_b_apies:
+              title: Предоставляемые бизнес-api
+              type: array
+              items:
+                type: array
+                items:
+                  $ref: "#/$rels/seaf.bbb.b_api.bapi"
+
 
           required:
             - title

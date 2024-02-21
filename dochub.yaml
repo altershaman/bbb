@@ -1,0 +1,5 @@
+imports:
+  - entities/business_api.yaml
+  - entities/capabilities.yaml
+  - views/menu.yaml
+  - views/capability_process_map.yaml

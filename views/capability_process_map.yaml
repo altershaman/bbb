@@ -1,0 +1,54 @@
+seaf.ba.ttl:
+
+  processes_mapped:
+    title: Распределенные процессы
+    bage: refresh
+    hex:
+      =>исполняется в:
+        mm.capability:
+    hexQ:
+      mm.process.hexQ:
+        ANY=>исполняется в:
+          mm.capability.hexQ:
+
+
+  cap_process_map:
+    title: Распределение процессов по способностям
+    hexV:
+      modes:
+        - title: Распределение
+          hexV:
+            mm.capability.hexQ:
+            processes_mapped.hexQ:
+            hexR:
+              nest:
+                - <=относится к:
+                - <=исполняется в:
+              dir: horizontal
+
+        # - title: Не распределены
+        #   hexV:
+        #     mm.capability.hexQ:
+        #     mm.bapi.hexQ:
+        #     hexR:
+        #       nest:
+        #         - <=относится к:
+        #         - <=предоставляется:
+
+        # - title: Процессы по способностям
+        #   hexV:
+        #     mm.capability.hexQ:
+        #     mm.process.hexQ:
+        #     hexR:
+        #       nest:
+        #         - <=в составе:
+        # - title: Ресурсные потоки
+        #   hexV:
+        #     mm.capability.hexQ:
+        #     mm.process.hexQ:
+        #     mm.resource.hexQ:
+        #     hexR:
+        #       exclude:
+        #         - enables
+        #       nest:
+        #         - <=в составе:
