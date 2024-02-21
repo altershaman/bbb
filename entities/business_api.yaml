@@ -19,3 +19,35 @@ entities:
               title: Описание
               type: string
 
+    presentations:
+
+      card:
+        title: Карточка бизнес-апи
+        type: markdown
+        template: templates/bapi_card.md
+        source: >
+          (
+            $id:= $params.id;
+            {
+              "id": $id,
+              "body": $lookup($."seaf.bbb.b_api", $id)
+            }
+          )
+
+      sequence:          
+        title: Sequence diagram
+        type: plantuml
+        template: templates/bapi_sequence.puml
+        source: >
+          (
+            $
+          )
+
+    menu: >
+      (
+          {
+            "location": "Архитектура/Бизнес-архитектура/Бизнес-апи (temp)/Пример",
+            "link": "/entities/seaf.bbb.b_api/card?id=sbf.deal.consistency.current_schema_by_id"
+          };
+
+      )

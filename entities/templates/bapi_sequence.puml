@@ -1,0 +1,32 @@
+@startuml
+
+!pragma teoz true
+
+participant "ФБС-клиент" as client
+
+
+box "Текущая схема по ID" #LightBlue
+participant "АС Схемы" as schema_system
+end box
+
+box "Другие API" #LightGray
+participant "ФБС1" as fbs1
+participant "ФБС2" as fbs2
+end box
+
+
+client -> schema_system : schema id, token
+activate schema_system
+schema_system -> fbs2 : token
+activate fbs2
+fbs2 -> schema_system : reject
+schema_system -x client : reject
+fbs2 -> schema_system : ok
+fbs2 -> fbs1: access event
+
+deactivate fbs2
+schema_system -x client : invalid id
+schema_system -> client : schema
+deactivate schema_system
+
+@enduml

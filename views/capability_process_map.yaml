@@ -1,15 +1,28 @@
 seaf.ba.ttl:
 
   processes_mapped:
-    title: Распределенные процессы
+    title: Целевой процесс
     bage: refresh
     hex:
-      =>исполняется в:
-        mm.capability:
+      <=используется в:
+        capabilities_in_use:
+      =>поток работ:
+        processes_mapped:
     hexQ:
       mm.process.hexQ:
-        ANY=>исполняется в:
+        ANY<=используется в:
           mm.capability.hexQ:
+
+  capabilities_in_use:
+    title: Задействованные ФБС
+    bage: hex_olive
+    hex:
+      =>используется в:
+        mm.process:
+    hexQ:
+      mm.capability.hexQ:
+        ANY=>используется в:
+          mm.process.hexQ:
 
 
   cap_process_map:
@@ -18,13 +31,14 @@ seaf.ba.ttl:
       modes:
         - title: Распределение
           hexV:
-            mm.capability.hexQ:
+            capabilities_in_use.hexQ:
             processes_mapped.hexQ:
+            # mm.process.hexQ:
             hexR:
               nest:
                 - <=относится к:
-                - <=исполняется в:
-              dir: horizontal
+                - <=используется в:
+              dir: vertical
 
         # - title: Не распределены
         #   hexV:

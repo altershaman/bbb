@@ -24,11 +24,11 @@ entities:
               title: Вышестоящая ФБС
               type: string
               $ref: "#/$rels/seaf.bbb.capabilities.capability"
-            composed_of:
-              title: Процессный состав
+            used_in:
+              title: Процессы, в которых задействована ФБС
               type: array
               items:
-                $ref: "#/$rels/seaf.ba.processes.processes"
+                $ref: "#/$rels/seaf.ba.processes.process"
             owner:
               title: Владелец
               type: string
